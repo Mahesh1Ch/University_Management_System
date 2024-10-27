@@ -17,7 +17,8 @@ public class CourseDataInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) throws Exception
+    {
         // Predefined courses
         Course cse = new Course("CSE1001", "Computer Science Engineering", "Focuses on computing technology, algorithms, and software design.");
         Course ece = new Course("ECE1001", "Electronics and Communication Engineering", "Involves the study of electronic devices, circuits, and communication systems.");
