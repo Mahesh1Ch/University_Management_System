@@ -30,7 +30,8 @@ public class CourseService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
     }
 
-    public Course createCourse(Course course) {
+    public Course createCourse(Course course)
+    {
         return courseRepository.save(course);
     }
 
