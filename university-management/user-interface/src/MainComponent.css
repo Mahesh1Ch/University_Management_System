@@ -1,0 +1,16 @@
+/* MainComponent container styling */
+#main-component-container {
+    width: 100%;
+    height: 100vh; /* Ensure it takes full viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  /* Add any specific styles for the layout of MainComponent */
+  #main-component-container .content {
+    width: 80%;  /* Example to control inner content width */
+    margin-top: 20px;
+  }
+  
