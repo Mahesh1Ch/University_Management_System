@@ -32,7 +32,9 @@ public class Student {
     @Column(nullable = false, unique = true)
     private String email;
 
-    public Student() {
+
+
+    public Student(){
     }
 
     public Student(int id, String firstName, String lastName, Integer age, String email) {

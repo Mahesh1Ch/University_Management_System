@@ -15,7 +15,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/students")
-public class StudentController {
+public class StudentController
+{
 
     private final StudentServiceInterface studentService;
 

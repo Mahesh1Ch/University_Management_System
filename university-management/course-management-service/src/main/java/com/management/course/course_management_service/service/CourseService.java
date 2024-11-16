@@ -10,29 +10,34 @@ import java.util.List;
 @Service
 public class CourseService {
 
+
     private final CourseRepository courseRepository;
 
     @Autowired
-    public CourseService(CourseRepository courseRepository) {
+    public CourseService(CourseRepository courseRepository)
+    {
         this.courseRepository = courseRepository;
     }
 
-    public List<Course> getAllCourses() {
+    public List<Course> getAllCourses()
+    {
         return courseRepository.findAll();
     }
 
-    public Course getCourseById(String courseId) {
+    public Course getCourseById(String courseId)
+    {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
     }
 
-    public Course createCourse(Course course) {
+    public Course createCourse(Course course)
+    {
         return courseRepository.save(course);
     }
 
     public Course updateCourse(String courseId, Course courseDetails) {
         Course course = getCourseById(courseId);
-        course.setCourse_name(courseDetails.getCourse_name());
+        course.setCourseName(courseDetails.getCourseName());
         course.setDescription(courseDetails.getDescription());
         return courseRepository.save(course);
     }
