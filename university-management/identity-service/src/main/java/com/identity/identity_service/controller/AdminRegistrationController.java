@@ -10,7 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("adminregistraion")
@@ -38,18 +40,37 @@ public class AdminRegistrationController
 
 
     @PostMapping("/initiate")
-    public ResponseEntity<String> initiateAdminCreation(@Validated @RequestBody Admin adminDetails) {
+    public ResponseEntity<Map<String, String>> initiateAdminCreation(@Validated @RequestBody Admin adminDetails) {
         String responseMessage = adminRegistrationService.initiateAdminCreation(adminDetails);
-        return ResponseEntity.ok(responseMessage);
+
+        // Return the response as JSON
+        Map<String, String> response = new HashMap<>();
+        response.put("message", responseMessage);  // The message will be "OTP sent to 9999999990"
+        response.put("status", "success");  // You can add additional status info
+
+        return ResponseEntity.ok(response);
     }
+
 
     // Endpoint to complete admin creation after OTP verification
     @PostMapping("/complete")
-    public ResponseEntity<Admin> completeAdminCreation(@Validated @RequestBody Admin adminDetails,
-                                                       @RequestParam String otp) {
+    public ResponseEntity<Map<String, Object>> completeAdminCreation(@Validated @RequestBody Admin adminDetails,
+                                                                     @RequestParam String otp) {
         Admin admin = adminRegistrationService.completeAdminCreation(adminDetails, otp);
-        return ResponseEntity.ok(admin);
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (admin != null) {
+            response.put("status", "success");  // Adding the status field
+            response.put("data", admin);        // Adding the admin data
+        } else {
+            response.put("status", "error");
+            response.put("message", "Invalid OTP or registration failed");
+        }
+
+        return ResponseEntity.ok(response);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Admin> updateAdmin(@PathVariable("id") int adminId,
