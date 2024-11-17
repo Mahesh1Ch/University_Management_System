@@ -42,7 +42,7 @@ public class AdminLoginController {
             response.put("data", admin);        // Adding the admin data
         } else {
             response.put("status", "error");
-            response.put("message", "Invalid OTP or registration failed");
+            response.put("message", "Invalid OTP or registration failed !");
         }
 
         return ResponseEntity.ok(response);
