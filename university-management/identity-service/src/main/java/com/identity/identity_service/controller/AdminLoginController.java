@@ -1,6 +1,6 @@
 package com.identity.identity_service.controller;
 
-import com.identity.identity_service.dto.LoginResponse;
+import com.identity.identity_service.entity.Admin;
 import com.identity.identity_service.service.AdminLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +17,22 @@ public class AdminLoginController {
         this.adminLoginService = adminLoginService;
     }
 
-    @PostMapping
-    public ResponseEntity<LoginResponse> loginAdmin(@RequestParam String phone) {
-        boolean isValid = adminLoginService.validateAdminLogin(phone);
+    @PostMapping("/otpgeneration")
+    public ResponseEntity<String>  generateLoginOtp(@RequestParam String phone) {
+        String responseMessage = adminLoginService.generateLoginOtp(phone);
 
-        if (isValid) {
-            return ResponseEntity.ok(new LoginResponse(true, "Success: Phone number found."));
-        } else {
-            return ResponseEntity.ok(new LoginResponse(false, "Failure: Phone number not found."));
-        }
+        return ResponseEntity.ok(responseMessage);
     }
+
+    @PostMapping("/otpvalidation")
+    public ResponseEntity<Admin> validateLoginOtp(@RequestParam String phone,@RequestParam String otpInput)
+    {
+        Admin admin = adminLoginService.validateLoginOtp(phone,otpInput);
+
+        return ResponseEntity.ok(admin);
+    }
+
+
 
 
 }

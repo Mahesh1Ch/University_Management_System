@@ -5,6 +5,7 @@ import com.identity.identity_service.entity.Otp;
 import com.identity.identity_service.exception.ResourseNotFoundException;
 import com.identity.identity_service.repositoty.AdminRegistrationRepository;
 import com.identity.identity_service.repositoty.OtpRepository;
+import com.identity.identity_service.utility.OtpUtility;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,13 @@ public class AdminRegistrationService
     @Autowired
     private EmailService emailService;
 
+    private final OtpUtility otpUtility;
+
     @Autowired
-    public AdminRegistrationService(AdminRegistrationRepository repository)
+    public AdminRegistrationService(AdminRegistrationRepository repository,OtpUtility otpUtility)
     {
         this.repository = repository;
+        this.otpUtility=otpUtility;
     }
 
     public Admin getAdminById(int id)
@@ -66,7 +70,8 @@ public class AdminRegistrationService
         repository.deleteById(adminId);
     }
 
-    public List<Admin> getAllAdmins() {
+    public List<Admin> getAllAdmins()
+    {
         return repository.findAll();
     }
 
@@ -76,9 +81,9 @@ public class AdminRegistrationService
     {
         Admin existingAdmin = repository.findByPhone(admin.getPhone());
         if (existingAdmin == null) {
-            String otp = generateOtp(admin.getPhone());
+            String otp = otpUtility.generateOtp(admin.getPhone());
             // Ideally, send the OTP via SMS or email here
-            sendOtpToUser(admin.getPhone(), otp);
+            otpUtility.sendOtpToUser(admin.getPhone(), otp);
             // Return a status or message to indicate OTP has been sent
             return "OTP sent to " + admin.getPhone();
         } else {
@@ -86,45 +91,13 @@ public class AdminRegistrationService
         }
     }
 
-    @Transactional
-    public String generateOtp(String phoneNumber) {
-        String otp = String.format("%06d", (int) (Math.random() * 999999));
-        Otp otpEntity = new Otp();
-        otpEntity.setPhoneNumber(phoneNumber);
-        otpEntity.setOtp(otp);
-        otpEntity.setExpiryTime(LocalDateTime.now().plusMinutes(2));
 
-        Optional<Otp> existingOtp = otpRepository.findByPhoneNumber(phoneNumber);
-        existingOtp.ifPresent(otpRepository::delete); // delete existing OTP if present
-
-        otpRepository.save(otpEntity);
-        return otp;
-    }
-
-
-    // Method to verify the OTP
-    public boolean verifyOtp(String phoneNumber, String otpInput) {
-        Optional<Otp> otpEntityOptional = otpRepository.findByPhoneNumber(phoneNumber);
-
-        if (otpEntityOptional.isPresent()) {
-            Otp otpEntity = otpEntityOptional.get();
-            boolean otpStatus = otpEntity.getOtp().equals(otpInput) && LocalDateTime.now().isBefore(otpEntity.getExpiryTime());
-
-            if (otpStatus)
-            {
-                otpRepository.deleteByPhoneNumber(phoneNumber);
-                return true;
-            }
-        }
-
-        return false; // OTP is invalid or not found
-    }
 
 
     @Transactional
     // Method to save admin after OTP verification
     public Admin completeAdminCreation(@Valid Admin admin, String otpInput) {
-        if (verifyOtp(admin.getPhone(), otpInput)) {
+        if (otpUtility.verifyOtp(admin.getPhone(), otpInput)) {
             Admin admin_save= repository.save(admin); // Save admin
             /*if(admin_save!=null)
             {
@@ -138,10 +111,6 @@ public class AdminRegistrationService
         }
     }
 
-    private void sendOtpToUser(String phoneNumber, String otp) {
-        // Logic to send OTP to the user's phone via SMS
-        System.out.println("Sending OTP: " + otp + " to " + phoneNumber);
-    }
 
    /* public boolean verifyOtp(String phoneNumber, String otp)
     {

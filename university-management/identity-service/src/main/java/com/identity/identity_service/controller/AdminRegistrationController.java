@@ -2,6 +2,7 @@ package com.identity.identity_service.controller;
 
 import com.identity.identity_service.entity.Admin;
 import com.identity.identity_service.service.AdminRegistrationService;
+import com.identity.identity_service.utility.OtpUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,13 @@ import java.util.Map;
 public class AdminRegistrationController
 {
     private final AdminRegistrationService adminRegistrationService;
+    private OtpUtility otpUtility;
 
     @Autowired
-    public AdminRegistrationController(AdminRegistrationService adminRegistrationService)
+    public AdminRegistrationController(AdminRegistrationService adminRegistrationService,OtpUtility otpUtility)
     {
         this.adminRegistrationService = adminRegistrationService;
+        this.otpUtility=otpUtility;
     }
 
     @GetMapping("/{id}")
@@ -93,7 +96,8 @@ public class AdminRegistrationController
 
     @PostMapping("/verifyOtp")
     public String verifyOtp(@RequestParam String phoneNumber, @RequestParam String otp, HttpServletRequest request, Model model) {
-        if (adminRegistrationService.verifyOtp(phoneNumber, otp)) {
+        if (otpUtility.verifyOtp(phoneNumber, otp))
+        {
             // OTP is correct, store user info in the session
             HttpSession session = request.getSession();
             session.setAttribute("loggedInUser", phoneNumber); // Store phone number as user identifier
